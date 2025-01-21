@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kortstokk Spill</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-display {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .card-image {
+            max-width: 226px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #deckId {
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kortstokk Spill</h1>
+        <div>
+            <button onclick="createDeck()">Lag ny kortstokk</button>
+            <button onclick="shuffleDeck()" id="shuffleBtn" disabled>Stokk kortene</button>
+            <button onclick="drawCard()" id="drawBtn" disabled>Trekk kort</button>
+            <button onclick="viewDeck()" id="viewBtn" disabled>Se kortstokk</button>
+        </div>
+        <div id="deckId"></div>
+        <div class="card-display" id="cardDisplay"></div>
+        <div id="deckContent"></div>
+    </div>
+
+    <script>
+        let currentDeckId = null;
+
+        // Oppdatert funksjon for å konvertere kort til deckofcardsapi format
+        function convertToImageCode(card) {
+            const suitMap = {
+                'hearts': 'H',
+                'diamonds': 'D',
+                'clubs': 'C',
+                'spades': 'S'
+            };
+            // Konverterer '10' til '0' for deckofcardsapi
+            const rank = card.rank === '10' ? '0' : card.rank;
+            return `${rank}${suitMap[card.suit]}`;
+        }
+
+        // Funksjon for å lage en ny kortstokk
+        async function createDeck() {
+            try {
+                const response = await fetch('/temp/deck', { method: 'POST' });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Feil ved opprettelse av kortstokk');
+                }
+                currentDeckId = data.deck_id;
+                document.getElementById('deckId').textContent = `Kortstokk ID: ${currentDeckId}`;
+                document.getElementById('shuffleBtn').disabled = false;
+                document.getElementById('drawBtn').disabled = false;
+                document.getElementById('viewBtn').disabled = false;
+                document.getElementById('cardDisplay').innerHTML = '';
+                document.getElementById('deckContent').innerHTML = '';
+            } catch (error) {
+                alert(`Feil: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        // Funksjon for å stokke kortstokken
+        async function shuffleDeck() {
+            if (!currentDeckId) return;
+            try {
+                const response = await fetch(`/temp/deck/shuffle/${currentDeckId}`, { method: 'PATCH' });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Feil ved stokking av kort');
+                }
+                document.getElementById('cardDisplay').innerHTML = '';
+                document.getElementById('deckContent').innerHTML = '';
+            } catch (error) {
+                alert(`Feil: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        // Funksjon for å trekke et kort
+        async function drawCard() {
+            if (!currentDeckId) return;
+            try {
+                const response = await fetch(`/temp/deck/${currentDeckId}/card`);
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Feil ved trekking av kort');
+                }
+                if (data.card) {
+                    const cardCode = convertToImageCode(data.card);
+                    const imageUrl = `https://deckofcardsapi.com/static/img/${cardCode}.png`;
+                    document.getElementById('cardDisplay').innerHTML = 
+                        `<img src="${imageUrl}" alt="${data.card.rank} of ${data.card.suit}" class="card-image">`;
+                }
+            } catch (error) {
+                alert(`Feil: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        // Funksjon for å vise kortstokken
+        async function viewDeck() {
+            if (!currentDeckId) return;
+            try {
+                const response = await fetch(`/temp/deck/${currentDeckId}`);
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Feil ved visning av kortstokk');
+                }
+                const deckContent = document.getElementById('deckContent');
+                deckContent.innerHTML = '<h3>Kortstokk innhold:</h3>';
+                const cardContainer = document.createElement('div');
+                cardContainer.style.display = 'flex';
+                cardContainer.style.flexWrap = 'wrap';
+                cardContainer.style.gap = '10px';
+                cardContainer.style.justifyContent = 'center';
+
+                data.deck.forEach(card => {
+                    const cardCode = convertToImageCode(card);
+                    const imageUrl = `https://deckofcardsapi.com/static/img/${cardCode}.png`;
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = `${card.rank} of ${card.suit}`;
+                    img.style.width = '100px';
+                    img.style.height = 'auto';
+                    cardContainer.appendChild(img);
+                });
+                deckContent.appendChild(cardContainer);
+            } catch (error) {
+                alert(`Feil: ${error.message}`);
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
