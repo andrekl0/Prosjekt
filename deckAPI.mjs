@@ -1,6 +1,5 @@
 import express from 'express';
 
-
 const app = express();
 const port = process.env.PORT || 8000;
 
@@ -22,9 +21,14 @@ function createDeck() {
 
 // POST /temp/deck - Opprett en ny kortstokk
 app.post('/temp/deck', (req, res) => {
-    const deckId = `deck_${Date.now()}`;
-    decks[deckId] = createDeck();
-    res.status(201).json({ deck_id: deckId });
+    try {
+        const deckId = `deck_${Date.now()}`;
+        decks[deckId] = createDeck();
+        res.status(201).json({ deck_id: deckId });
+    } catch (error) {
+        console.error('Feil ved opprettelse av kortstokk:', error);
+        res.status(500).json({ error: 'Kunne ikke opprette kortstokk' });
+    }
 });
 
 // PATCH /temp/deck/shuffle/:deck_id - Stokk kortstokken
@@ -33,16 +37,20 @@ app.patch('/temp/deck/shuffle/:deck_id', (req, res) => {
     const deck = decks[deck_id];
 
     if (!deck) {
-        return res.status(404).json({ error: 'Deck not found' });
+        return res.status(404).json({ error: 'Kortstokken finnes ikke' });
     }
 
-    // Stokker kortstokken med Fisher-Yates-algoritmen
-    for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
+    try {
+        // Stokker kortstokken med Fisher-Yates-algoritmen
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        res.json({ message: 'Kortstokken er stokket', deck_id });
+    } catch (error) {
+        console.error('Feil ved stokking av kort:', error);
+        res.status(500).json({ error: 'Kunne ikke stokke kortstokken' });
     }
-
-    res.json({ message: 'Deck shuffled', deck_id });
 });
 
 // GET /temp/deck/:deck_id - Hent hele kortstokken
@@ -51,7 +59,7 @@ app.get('/temp/deck/:deck_id', (req, res) => {
     const deck = decks[deck_id];
 
     if (!deck) {
-        return res.status(404).json({ error: 'Deck not found' });
+        return res.status(404).json({ error: 'Kortstokken finnes ikke' });
     }
 
     res.json({ deck });
@@ -63,18 +71,21 @@ app.get('/temp/deck/:deck_id/card', (req, res) => {
     const deck = decks[deck_id];
 
     if (!deck) {
-        return res.status(404).json({ error: 'Deck not found' });
+        return res.status(404).json({ error: 'Kortstokken finnes ikke' });
     }
 
     if (deck.length === 0) {
-        return res.status(400).json({ error: 'Deck is empty' });
+        return res.status(400).json({ error: 'Kortstokken er tom' });
     }
 
-    // Trekker et tilfeldig kort fra kortstokken
-    const randomIndex = Math.floor(Math.random() * deck.length);
-    const drawnCard = deck.splice(randomIndex, 1)[0];
-
-    res.json({ card: drawnCard });
+    try {
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        const drawnCard = deck.splice(randomIndex, 1)[0];
+        res.json({ card: drawnCard });
+    } catch (error) {
+        console.error('Feil ved trekking av kort:', error);
+        res.status(500).json({ error: 'Kunne ikke trekke kort' });
+    }
 });
 
 app.use(express.static('public'));
