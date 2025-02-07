@@ -50,7 +50,14 @@ app.post('/tmp/sum/:a/:b', (req, res) => {
     res.send(`The sum of ${a} and ${b} is ${sum}`);
 });
 
+app.get('/temp/session', (req, res) => {
+    res.json({ session: req.session });
+});
+
+
 // Start server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+
+// 
