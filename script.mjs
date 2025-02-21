@@ -1,6 +1,7 @@
 import express from 'express';
 import HTTP_CODES from './utils/httpCodes.mjs'; // Sørg for at denne filen eksisterer
-import { spinWheel } from './src/spinAPI.mjs'; // Importer spin-funksjonen
+import { spinWheel } from './spinAPI.mjs';
+
 
 const app = express();
 const port = process.env.PORT || 8000;
