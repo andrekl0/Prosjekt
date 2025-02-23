@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": "6f2875a8-f89c-463a-9f6a-5d0d48be3075",
+		"name": "Spinthewheel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40982706"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Kaffetrekning\",\n  \"items\": [\n    { \"text\": \"Gratis kaffe\", \"weight\": 1 },\n    { \"text\": \"Betalt kaffe\", \"weight\": 2 },\n    { \"text\": \"Ingen kaffe\", \"weight\": 1 }\n    { \"text\": \"Sterk kaffe\", \"weight\": 1 }\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://spin-the-wheel-pcyd.onrender.com/wheels/2",
+					"protocol": "https",
+					"host": [
+						"spin-the-wheel-pcyd",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"wheels",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
