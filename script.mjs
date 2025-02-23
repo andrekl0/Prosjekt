@@ -1,5 +1,7 @@
 import express from 'express';
 import HTTP_CODES from './utils/httpCodes.mjs'; // Sørg for at denne filen eksisterer
+import { spinWheel } from './spinAPI.mjs';
+
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -7,6 +9,9 @@ const port = process.env.PORT || 8000;
 // Middleware
 app.use(express.static('public'));
 app.use(express.json()); // Legg til JSON-middleware for å håndtere JSON-data
+
+// Midlertidig lagring av hjul i minnet
+let wheels = [];
 
 // Root route (Hello World)
 app.get("/", (req, res) => {
@@ -54,6 +59,7 @@ app.post('/tmp/sum/:a/:b', (req, res) => {
 app.get('/temp/session', (req, res) => {
     res.json({ session: req.session });
 });
+
 
 // Start server
 app.listen(port, () => {
