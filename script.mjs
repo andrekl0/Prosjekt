@@ -4,7 +4,7 @@ import { spinWheel } from './spinAPI.mjs';
 
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8002;
 
 // Middleware
 app.use(express.static('public'));
