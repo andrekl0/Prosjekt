@@ -13,10 +13,9 @@ export const spinWheel = (items) => {
 };
 
 const app = express();
-const port = process.env.WHEEL_PORT || 8000; // Sørg for at porten er 8000
-
+const port = process.env.WHEEL_PORT || 3000; // Endret fra 8000 til 3000
 // Middleware
-app.use(express.static('public')); // Fjern denne linjen hvis du ikke vil servere statiske filer
+
 app.use(express.json());
 app.use(cors());
 
@@ -30,5 +29,5 @@ app.use('/wheels', wheelRoutes);
 
 // Start server
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
