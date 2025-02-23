@@ -1,5 +1,5 @@
 import express from 'express';
-import wheelRoutes from './Wheelroutes.mjs';
+import wheelRoutes from './Wheelroutes.js';
 import HTTP_CODES from './utils/httpCodes.mjs';
 import cors from 'cors';
 
@@ -13,13 +13,14 @@ export const spinWheel = (items) => {
 };
 
 const app = express();
-const port = process.env.WHEEL_PORT || 8000; // Endret fra 8001 til 8000
+const port = process.env.WHEEL_PORT || 8000; // Sørg for at porten er 8000
+
 // Middleware
-app.use(express.static('public'));
+app.use(express.static('public')); // Fjern denne linjen hvis du ikke vil servere statiske filer
 app.use(express.json());
 app.use(cors());
 
-// Root route from script.mjs
+// Root route
 app.get("/", (req, res) => {
     res.status(HTTP_CODES.SUCCESS.OK).send('Hello World').end();
 });
