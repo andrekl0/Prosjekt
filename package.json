@@ -2,9 +2,9 @@
   "name": "prosjekt",
   "version": "1.0.0",
   "type": "module",
-  "main": "spinAPI.mjs", 
+  "main": "spinAPI.mjs",
   "scripts": {
-    "start": "node spinAPI.mjs" 
+    "start": "node spinAPI.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
