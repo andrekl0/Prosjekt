@@ -1,14 +1,22 @@
 import express from 'express';
-import wheelRoutes from './Wheelroutes.mjs'; // Importer ruter for hjulene
+import wheelRoutes from './Wheelroutes.mjs';
+import HTTP_CODES from './utils/httpCodes.mjs';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 8000;
 
 // Middleware
 app.use(express.static('public'));
-app.use(express.json()); // Legg til JSON-middleware for å håndtere JSON-data
+app.use(express.json());
+app.use(cors());
 
-// Bruk Wheelroutes for å håndtere hjul-relaterte API-er
+// Root route from script.mjs
+app.get("/", (req, res) => {
+    res.status(HTTP_CODES.SUCCESS.OK).send('Hello World').end();
+});
+
+// Wheel routes
 app.use('/wheels', wheelRoutes);
 
 // Start server
