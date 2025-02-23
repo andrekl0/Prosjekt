@@ -13,7 +13,7 @@ export const spinWheel = (items) => {
 };
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.WHEEL_PORT || 8001; // Changed from 8000 to 8001
 
 // Middleware
 app.use(express.static('public'));
