@@ -19,6 +19,15 @@ app.get("/", (req, res) => {
 // Wheel routes
 app.use('/wheels', wheelRoutes);
 
+// Export spinWheel function
+export const spinWheel = (items) => {
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        throw new Error('Invalid wheel items');
+    }
+    const randomIndex = Math.floor(Math.random() * items.length);
+    return items[randomIndex];
+};
+
 // Start server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
