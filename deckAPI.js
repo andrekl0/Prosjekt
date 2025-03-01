@@ -5,23 +5,23 @@ import Redis from 'ioredis';
 import { default as connectRedis } from 'connect-redis';
 import dotenv from 'dotenv';
 
-// Last miljøvariabler
+
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8002;
 
-// Redis klient oppsett
+// Redis klient 
 const redis = new Redis({
     host: process.env.REDIS_HOST || 'localhost',
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_PASSWORD,
 });
 
-// Opprett Redis session store
+
 const RedisStore = connectRedis(session);
 
-// Middleware oppsett
+// Middleware 
 app.use(cors());
 app.use(session({
     store: new RedisStore({ client: redis }),
@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 });
 
 
-// Lagring av kortstokker i Redis istedenfor minnet
+
 async function saveDeck(deckId, deck) {
     await redis.set(`deck:${deckId}`, JSON.stringify(deck));
 }
@@ -56,7 +56,7 @@ async function deleteDeck(deckId) {
     await redis.del(`deck:${deckId}`);
 }
 
-// Funksjon for å generere en ny kortstokk
+
 function createDeck() {
     const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
     const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -69,7 +69,6 @@ function createDeck() {
     return deck;
 }
 
-// POST /temp/deck - Opprett en ny kortstokk
 app.post('/temp/deck', async (req, res) => {
     try {
         const deckId = `deck_${Date.now()}`;
@@ -82,7 +81,6 @@ app.post('/temp/deck', async (req, res) => {
     }
 });
 
-// PATCH /temp/deck/shuffle/:deck_id - Stokk kortstokken
 app.patch('/temp/deck/shuffle/:deck_id', async (req, res) => {
     try {
         const { deck_id } = req.params;
@@ -92,7 +90,7 @@ app.patch('/temp/deck/shuffle/:deck_id', async (req, res) => {
             return res.status(404).json({ error: 'Kortstokken finnes ikke' });
         }
 
-        // Stokker kortstokken med Fisher-Yates-algoritmen
+   
         for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1)); 
             [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -106,7 +104,7 @@ app.patch('/temp/deck/shuffle/:deck_id', async (req, res) => {
     }
 });
 
-// GET /temp/deck/:deck_id - Hent hele kortstokken
+
 app.get('/temp/deck/:deck_id', async (req, res) => {
     try {
         const { deck_id } = req.params;
@@ -123,7 +121,6 @@ app.get('/temp/deck/:deck_id', async (req, res) => {
     }
 });
 
-// GET /temp/deck/:deck_id/card - Trekk et kort
 app.get('/temp/deck/:deck_id/card', async (req, res) => {
     try {
         const { deck_id } = req.params;
@@ -150,7 +147,7 @@ app.get('/temp/deck/:deck_id/card', async (req, res) => {
 
 app.use(express.static('public'));
 
-// Håndter graceful shutdown
+
 process.on('SIGTERM', async () => {
     console.log('Mottak SIGTERM signal. Lukker tilkoblinger...');
     await redis.quit();

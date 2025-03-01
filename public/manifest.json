@@ -1,0 +1,17 @@
+{
+    "short_name": "SpinWheel",
+    "name": "Spin the Wheel App",
+    "description": "En app for å spinne hjul med alternativer.",
+    "start_url": "/app.html",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#4CAF50",
+    "icons": [
+        {
+            "src": "/icons/wheel.png",
+            "type": "image/png",
+            "sizes": "1024x1024"
+        }
+    ]
+}

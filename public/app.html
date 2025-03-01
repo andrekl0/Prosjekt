@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin the Wheel</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/icon-192x192.png">
+</head>
+<body>
+    <h1>Velkommen til Spin the Wheel!</h1>
+
+    <button id="spinButton">🎡 Spinn hjulet!</button>
+    <p id="result">Resultat: -</p>
+
+    <script>
+        document.getElementById("spinButton").addEventListener("click", async () => {
+            try {
+                const response = await fetch("/spin");
+                const data = await response.json();
+                document.getElementById("result").textContent = `Resultat: ${data.result}`;
+            } catch (error) {
+                console.error("Feil ved spinning:", error);
+                document.getElementById("result").textContent = "Noe gikk galt!";
+            }
+        });
+
+        // Registrer service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registrert:', registration);
+                })
+                .catch(error => {
+                    console.error('Service Worker registrering feilet:', error);
+                });
+        }
+    </script>
+</body>
+</html>
