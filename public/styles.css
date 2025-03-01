@@ -1,0 +1,47 @@
+body {
+    text-align: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+img {
+    margin: 20px;
+}
+
+.wheel-container {
+    position: relative;
+    display: inline-block;
+}
+
+.arrow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid #000000;
+    z-index: 1;
+}
+
+.spinning {
+    transition: transform 2s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+#spinButton {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
