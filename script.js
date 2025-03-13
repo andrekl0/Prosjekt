@@ -1,6 +1,6 @@
 import express from 'express';
 import HTTP_CODES from './utils/httpCodes.mjs'; 
-import { spinWheel } from './spinAPI.mjs';
+
 
 
 const app = express();
@@ -9,7 +9,6 @@ const port = process.env.PORT || 8002;
 // Middleware
 app.use(express.static('public'));
 app.use(express.json()); 
-let wheels = [];
 
 // Root route 
 app.get("/", (req, res) => {

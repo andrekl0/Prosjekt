@@ -1,7 +1,7 @@
 document.getElementById('draw-card').addEventListener('click', drawCard);
 
 function drawCard() {
-    const deckId = 'your_deck_id_here';  // Sett inn ID-en fra serveren når den er opprettet
+    const deckId = 'your_deck_id_here'; 
     fetch(`/temp/deck/${deckId}/card`)
         .then(response => response.json())
         .then(data => {
@@ -19,7 +19,6 @@ function drawCard() {
 }
 
 function getCardImageUrl(suit, rank) {
-    // Ekstern API for kortbilder
     const apiUrl = `https://deckofcardsapi.com/api/deck/new/draw/?count=1`;
     return `https://deckofcardsapi.com/static/img/${rank[0]}${suit[0]}.png`;
 }

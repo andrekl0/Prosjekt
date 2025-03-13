@@ -11,39 +11,161 @@
 <body>
     <h1>Velkommen til Spin the Wheel!</h1>
 
+    <div class="input-container">
+        <input type="text" id="wheelName" class="input-field" placeholder="Wheel Name">
+        <input type="text" id="prizeInput" class="input-field" placeholder="Enter Prize">
+        <button class="add-prize-btn" id="addPrizeBtn">Add Prize</button>
+        <button class="save-wheel-btn" id="saveWheelBtn">Save Wheel</button>
+        <button class="show-wheels-btn" id="showWheelsBtn">Show Saved Wheels</button>
+    </div>
+
+    <div id="savedWheels" class="saved-wheels-container">
+    </div>
+
     <div class="wheel-container">
         <div class="arrow"></div>
-        <img src="/icons/wheel.png" alt="Wheel" style="width: 200px; height: 200px;">
+        <div id="wheel">
+        </div>
     </div>
     
     <button id="spinButton">🎡 Spinn hjulet!</button>
     <p id="result">Resultat: -</p>
 
     <script>
+        let prizes = [];
+        const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+
+        document.getElementById('addPrizeBtn').addEventListener('click', () => {
+            const prize = document.getElementById('prizeInput').value.trim();
+            if (prize) {
+                prizes.push(prize);
+                updateWheel();
+                document.getElementById('prizeInput').value = '';
+            }
+        });
+
+        // Add save wheel functionality
+        document.getElementById('saveWheelBtn').addEventListener('click', async () => {
+            const wheelName = document.getElementById('wheelName').value.trim();
+            if (!wheelName) {
+                alert('Please enter a wheel name');
+                return;
+            }
+            if (prizes.length === 0) {
+                alert('Please add some prizes first');
+                return;
+            }
+
+            try {
+                const response = await fetch('/wheels', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: wheelName,
+                        items: prizes
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save wheel');
+                }
+
+                const result = await response.json();
+                alert('Wheel saved successfully!');
+                document.getElementById('wheelName').value = '';
+            } catch (error) {
+                console.error('Error saving wheel:', error);
+                alert('Failed to save wheel');
+            }
+        });
+
+        document.getElementById('showWheelsBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/wheels');
+                const wheels = await response.json();
+                
+                const container = document.getElementById('savedWheels');
+                container.innerHTML = '<h3>Saved Wheels:</h3>';
+                
+                wheels.forEach(wheel => {
+                    const wheelDiv = document.createElement('div');
+                    wheelDiv.className = 'wheel-item';
+                    wheelDiv.innerHTML = `
+                        <span>${wheel.name} (${wheel.items.length} items)</span>
+                        <button onclick="loadWheel(${wheel.id})">Load</button>
+                    `;
+                    container.appendChild(wheelDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching wheels:', error);
+                alert('Failed to fetch saved wheels');
+            }
+        });
+
+        async function loadWheel(id) {
+            try {
+                const response = await fetch(`/wheels/${id}`);
+                const wheel = await response.json();
+                
+                document.getElementById('wheelName').value = wheel.name;
+                prizes = wheel.items;
+                updateWheel();
+            } catch (error) {
+                console.error('Error loading wheel:', error);
+                alert('Failed to load wheel');
+            }
+        }
+
+        function updateWheel() {
+            const wheel = document.getElementById('wheel');
+            wheel.innerHTML = '';
+            
+            if (prizes.length === 0) return;
+            
+            const anglePerPrize = 360 / prizes.length;
+            prizes.forEach((prize, index) => {
+                const section = document.createElement('div');
+                section.className = 'wheel-section';
+                
+                // Create a separate div for text
+                const textDiv = document.createElement('div');
+                textDiv.className = 'section-text';
+                textDiv.textContent = prize;
+                section.appendChild(textDiv);
+                
+                section.style.backgroundColor = colors[index % colors.length];
+                section.style.transform = `rotate(${index * anglePerPrize}deg)`;
+                
+                wheel.appendChild(section);
+            });
+        }
+
         const wheel = document.querySelector('img');
         const spinButton = document.getElementById("spinButton");
         
         spinButton.addEventListener("click", async () => {
             try {
                 spinButton.disabled = true;
+                const wheel = document.getElementById('wheel');
                 
-                const currentRotation = wheel.style.transform ? 
-                    parseInt(wheel.style.transform.replace(/[^0-9]/g, '')) : 0;
-                const additionalRotation = Math.floor(Math.random() * (720 - 360 + 1)) + 360;
-                const finalRotation = currentRotation + additionalRotation;
+                // Reset transition before new spin
+                wheel.style.transition = 'none';
+                wheel.offsetHeight; // Force reflow
                 
-                wheel.classList.add('spinning');
-                wheel.style.transform = `rotate(${finalRotation}deg)`;
+                const additionalRotation = 360 * 5 + Math.floor(Math.random() * 360);
+                
+                wheel.style.transition = 'transform 3s cubic-bezier(0.2, 0.8, 0.3, 1)';
+                wheel.style.transform = `rotate(${additionalRotation}deg)`;
                 
                 const response = await fetch("/spin");
                 const data = await response.json();
                 
                 setTimeout(() => {
                     document.getElementById("result").textContent = `Resultat: ${data.result}`;
-                    wheel.classList.remove('spinning');
                     spinButton.disabled = false;
-                }, 2000);
-                
+                }, 3000);
             } catch (error) {
                 console.error("Feil ved spinning:", error);
                 document.getElementById("result").textContent = "Noe gikk galt!";

@@ -4,6 +4,7 @@ import HTTP_CODES from './utils/httpCodes.mjs';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pool from './db.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -32,10 +33,21 @@ app.get("/", (req, res) => {
 });
 
 
-app.get("/spin", (req, res) => {
-    const wheelItems = ["🎉 Gevinst!", "💰 Jackpot!", "🍀 Prøv igjen", "🎁 Overraskelse!", "❌ Ingen gevinst"];
-    const result = spinWheel(wheelItems);
-    res.json({ result });
+app.get("/spin", async (req, res) => {
+    try {
+        // Get first wheel from database (or you could specify an ID)
+        const result = await pool.query("SELECT items FROM wheels LIMIT 1");
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "No wheels found" });
+        }
+
+        const wheelItems = result.rows[0].items;
+        const spinResult = spinWheel(wheelItems);
+        res.json({ result: spinResult });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 
