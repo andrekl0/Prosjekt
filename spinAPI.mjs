@@ -35,7 +35,6 @@ app.get("/", (req, res) => {
 
 app.get("/spin", async (req, res) => {
     try {
-        // Get first wheel from database (or you could specify an ID)
         const result = await pool.query("SELECT items FROM wheels LIMIT 1");
         
         if (result.rows.length === 0) {
