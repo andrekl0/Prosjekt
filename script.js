@@ -6,16 +6,14 @@ import HTTP_CODES from './utils/httpCodes.mjs';
 const app = express();
 const port = process.env.PORT || 8002;
 
-// Middleware
+
 app.use(express.static('public'));
 app.use(express.json()); 
 
-// Root route 
 app.get("/", (req, res) => {
     res.status(HTTP_CODES?.SUCCESS?.OK || 200).send('Hello World').end();
 });
 
-// "/tmp/poem" route
 app.get('/tmp/poem', (req, res) => {
     const poem = `
     Roses are red,
@@ -26,7 +24,6 @@ app.get('/tmp/poem', (req, res) => {
     res.send(poem);
 });
 
-// "/tmp/quote" route
 const quotes = [
     "The only limit to our realization of tomorrow is our doubts of today.",
     "In the middle of every difficulty lies opportunity.",
@@ -40,7 +37,6 @@ app.get('/tmp/quote', (req, res) => {
     res.send(randomQuote);
 });
 
-// "/tmp/sum/a/b" route
 app.post('/tmp/sum/:a/:b', (req, res) => {
     const a = parseFloat(req.params.a);
     const b = parseFloat(req.params.b);
@@ -58,7 +54,6 @@ app.get('/temp/session', (req, res) => {
 });
 
 
-// Start server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });

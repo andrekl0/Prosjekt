@@ -12,11 +12,17 @@
     <h1>Velkommen til Spin the Wheel!</h1>
 
     <div class="input-container">
-        <input type="text" id="wheelName" class="input-field" placeholder="Wheel Name">
-        <input type="text" id="prizeInput" class="input-field" placeholder="Enter Prize">
-        <button class="add-prize-btn" id="addPrizeBtn">Add Prize</button>
-        <button class="save-wheel-btn" id="saveWheelBtn">Save Wheel</button>
-        <button class="show-wheels-btn" id="showWheelsBtn">Show Saved Wheels</button>
+        <input type="text" id="wheelName" class="input-field" placeholder="Hjul navn">
+        <input type="text" id="prizeInput" class="input-field" placeholder="Velg premie">
+        <button class="add-prize-btn" id="addPrizeBtn">Legg til premie</button>
+        <button class="save-wheel-btn" id="saveWheelBtn">Lagre hjul</button>
+        <button class="show-wheels-btn" id="showWheelsBtn">Vis largede hjul</button>
+        <button class="hide-wheels-btn" id="hideWheelsBtn" style="display:none;">Gjem largede hjul</button>
+    </div>
+
+    <div class="prize-list-container" id="prizeListContainer">
+        <h3>Nåværednde premier:</h3>
+        <ul id="prizeList" class="prize-list"></ul>
     </div>
 
     <div id="savedWheels" class="saved-wheels-container">
@@ -40,6 +46,7 @@
             if (prize) {
                 prizes.push(prize);
                 updateWheel();
+                updatePrizeList();
                 document.getElementById('prizeInput').value = '';
             }
         });
@@ -100,10 +107,20 @@
                     `;
                     container.appendChild(wheelDiv);
                 });
+                
+                document.getElementById('showWheelsBtn').style.display = 'none';
+                document.getElementById('hideWheelsBtn').style.display = 'inline-block';
             } catch (error) {
                 console.error('Error fetching wheels:', error);
                 alert('Failed to fetch saved wheels');
             }
+        });
+
+        document.getElementById('hideWheelsBtn').addEventListener('click', () => {
+            document.getElementById('savedWheels').innerHTML = '';
+            
+            document.getElementById('showWheelsBtn').style.display = 'inline-block';
+            document.getElementById('hideWheelsBtn').style.display = 'none';
         });
 
         async function loadWheel(id) {
@@ -114,6 +131,7 @@
                 document.getElementById('wheelName').value = wheel.name;
                 prizes = wheel.items;
                 updateWheel();
+                updatePrizeList();
             } catch (error) {
                 console.error('Error loading wheel:', error);
                 alert('Failed to load wheel');
@@ -230,6 +248,47 @@
             });
         }
 
+        function updatePrizeList() {
+            const prizeList = document.getElementById('prizeList');
+            prizeList.innerHTML = '';
+            
+            if (prizes.length === 0) {
+                prizeList.innerHTML = '<li>No prizes added yet</li>';
+                return;
+            }
+            
+            prizes.forEach((prize, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${prize}</span>
+                    <div class="prize-buttons">
+                        <button class="edit-btn" onclick="editPrize(${index})">Edit</button>
+                        <button class="delete-btn" onclick="deletePrize(${index})">Delete</button>
+                    </div>
+                `;
+                prizeList.appendChild(li);
+            });
+        }
+
+        function editPrize(index) {
+            const prize = prizes[index];
+            const newPrize = prompt('Edit prize:', prize);
+            
+            if (newPrize !== null && newPrize.trim() !== '') {
+                prizes[index] = newPrize.trim();
+                updateWheel();
+                updatePrizeList();
+            }
+        }
+
+        function deletePrize(index) {
+            if (confirm(`Are you sure you want to delete "${prizes[index]}"?`)) {
+                prizes.splice(index, 1);
+                updateWheel();
+                updatePrizeList();
+            }
+        }
+
         const spinButton = document.getElementById("spinButton");
         
         spinButton.addEventListener("click", async () => {
@@ -283,6 +342,8 @@
                     console.error('Service Worker registrering feilet:', error);
                 });
         }
+
+        updatePrizeList();
     </script>
 </body>
 </html>

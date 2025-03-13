@@ -183,3 +183,61 @@ img {
     margin-top: 10px;
     margin-left: 10px;
 }
+
+.hide-wheels-btn {
+    padding: 10px 20px;
+    background-color: #607d8b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.hide-wheels-btn:hover {
+    background-color: #455a64;
+}
+
+.prize-list-container {
+    margin: 20px auto;
+    max-width: 400px;
+    text-align: left;
+}
+
+.prize-list {
+    list-style: none;
+    padding: 0;
+}
+
+.prize-list li {
+    padding: 8px;
+    margin: 5px 0;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prize-list li .prize-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.prize-list li button {
+    padding: 3px 8px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.prize-list li .edit-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+.prize-list li .delete-btn {
+    background-color: #f44336;
+    color: white;
+}
