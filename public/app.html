@@ -212,22 +212,34 @@
         spinButton.disabled = true;
         const wheel = document.getElementById('wheel');
         
+        const currentRotation = wheel.style.transform 
+            ? parseInt(wheel.style.transform.replace(/[^0-9]/g, '')) || 0
+            : 0;
+            
         wheel.style.transition = 'none';
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
         wheel.offsetHeight; 
-
-        const minRotation = 360 * 2; 
-        const maxRotation = 360 * 3; 
-        const randomRotation = Math.floor(Math.random() * (maxRotation - minRotation) + minRotation);
         
-        wheel.style.transformOrigin = 'center center';
-        wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)'; 
-        wheel.style.transform = `rotate(${randomRotation}deg)`;
+        const additionalRotation = 720 + Math.floor(Math.random() * 360);
+        const newRotation = currentRotation + additionalRotation;
         
-        const response = await fetch("/spin");
-        const data = await response.json();
+        wheel.style.transition = 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)';
+        wheel.style.transform = `rotate(${newRotation}deg)`;
         
         setTimeout(() => {
-            document.getElementById("result").textContent = `Du vant: ${data.result}`;
+            if (prizes.length > 0) {
+
+                const normalizedRotation = newRotation % 360;
+                
+                const sectionAngle = 360 / prizes.length;
+ 
+                const sectionIndex = Math.floor((360 - normalizedRotation) / sectionAngle) % prizes.length;
+                
+                document.getElementById("result").textContent = `Du vant: ${prizes[sectionIndex]}`;
+            } else {
+                document.getElementById("result").textContent = "Ingen premier på hjulet!";
+            }
+            
             spinButton.disabled = false;
         }, 3000);
     } catch (error) {
