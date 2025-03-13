@@ -151,6 +151,28 @@ img {
     align-items: center;
 }
 
+.wheel-item button {
+    padding: 5px 10px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.wheel-item button:first-of-type {
+    background-color: #2196F3;
+    color: white;
+}
+
+.wheel-item button:last-of-type {
+    background-color: #f44336;
+    color: white;
+}
+
+.wheel-item button:hover {
+    opacity: 0.8;
+}
+
 .show-wheels-btn {
     padding: 10px 20px;
     background-color: #9c27b0;
